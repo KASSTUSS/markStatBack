@@ -45,11 +45,13 @@ const searchPerson = (obj, searchStr) => {
 
 //const dataObj = JSON.parse(fs.readFileSync('data.json', 'utf8'));
 
+
 app.get('/api', (req, res) => {
     const searchText = urlParser(decodeURI(req.url)).surname;
-    const result = parser('', searchText);
+    parser('', searchText).then((res) => {
+        res.json({
+            message: result
+        })
+    });
     console.log(urlParser(decodeURI(req.url)).surname);
-    res.json({
-        message: result
-    })
 });
