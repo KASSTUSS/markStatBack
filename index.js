@@ -1,5 +1,5 @@
 const express = require('express');
-//const parser = require('./parser');
+const parser = require('./parser');
 const urlParser = require('./urlParser');
 const fs = require('fs');
 
@@ -43,11 +43,11 @@ const searchPerson = (obj, searchStr) => {
     return (searchRes.length === 0) ? false : searchRes;
 };
 
-const dataObj = JSON.parse(fs.readFileSync('data.json', 'utf8'));
+//const dataObj = JSON.parse(fs.readFileSync('data.json', 'utf8'));
 
 app.get('/api', (req, res) => {
     const searchText = urlParser(decodeURI(req.url)).surname;
-    const result = searchPerson(dataObj, searchText);
+    const result = parser('', searchText);
     console.log(urlParser(decodeURI(req.url)).surname);
     res.json({
         message: result
