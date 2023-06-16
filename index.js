@@ -48,7 +48,7 @@ const searchPerson = (obj, searchStr) => {
 
 app.get('/api', (req, res) => {
     const searchText = urlParser(decodeURI(req.url)).surname;
-    parser('', searchText).then((res) => {
+    parser('', searchText).then((result) => {
         res.json({
             message: result
         })
