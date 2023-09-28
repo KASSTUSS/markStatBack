@@ -68,7 +68,7 @@ app.get("/api", (req, res) => {
 
   parser("", searchText).then((result) => {
     res.json({
-      result,
+      message: result,
     });
   });
 });
