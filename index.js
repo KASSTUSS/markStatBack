@@ -7,12 +7,12 @@ const PORT = process.env.PORT || 3001;
 
 const app = express();
 
-const cors = require("cors");
-app.use(
-  cors({
-    origin: "https://student-gsu.netlify.app",
-  })
-);
+// const cors = require("cors");
+// app.use(
+//   cors({
+//     origin: "https://student-gsu.netlify.app",
+//   })
+// );
 
 app.listen(PORT, () => {
   console.log(`SERVER IS STARTING on PORT ${PORT}`);
@@ -64,9 +64,10 @@ const fetching = async (url) => {
 const start = new Date().getTime();
 
 app.get("/api", (req, res) => {
-  const searchText = urlParser(decodeURI(req.url)).surname;
+  const surname = urlParser(decodeURI(req.url)).surname;
+  const card = urlParser(decodeURI(req.url)).card;
 
-  parser("", searchText).then((result) => {
+  parser(card, surname).then((result) => {
     res.json({
       message: result,
     });
