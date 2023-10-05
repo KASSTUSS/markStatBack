@@ -10,7 +10,7 @@ const app = express();
 const cors = require("cors");
 app.use(
   cors({
-    origin: "https://student-gsu.netlify.app",
+    origin: "https://develop--student-gsu-clone.netlify.app",
   })
 );
 
