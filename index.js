@@ -68,6 +68,7 @@ app.get("/api", (req, res) => {
   const card = urlParser(decodeURI(req.url)).card;
 
   parser(card, surname).then((result) => {
+    console.log(result);
     res.json({
       message: result,
     });
