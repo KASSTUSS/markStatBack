@@ -77,6 +77,7 @@ const Parser = async (login, surname) => {
     
     const end = new Date().getTime();
     console.log(end-start);
+    console.log((listPersonData.length === 0) ? false : listPersonData);
     return (listPersonData.length === 0) ? false : listPersonData;
 };
 
