@@ -5,7 +5,6 @@ const fs = require('fs');
 
 const Parser = async (login, surname) => {
     const getHTML = async (url) => {
-        const Sstart = performance.now();
 
         const {data} = await axios.get(url, {
         })
