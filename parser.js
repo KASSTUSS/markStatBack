@@ -1,14 +1,17 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
+const fs = require('fs');
+
 
 const Parser = async (login, surname) => {
-    const start= new Date().getTime();
+    const start = performance.now();
     const getHTML = async (url) => {
-        const Sstart= new Date().getTime();
+        const Sstart = performance.now();
 
-        const { data } = await axios.get(url);
+        const {data} = await axios.get(url, {
+        })
 
-        const Send= new Date().getTime();
+        const Send = performance.now();
         console.log(`req time: ${Send-Sstart}`);
         return cheerio.load(data);
     };
@@ -18,9 +21,9 @@ const Parser = async (login, surname) => {
     
     const urlReqBase = 'http://students.gsu.by/frontpage?title=' + login + '&field_surname_value=' + surname;
     
-    const sstart= new Date().getTime();
+    const sstart = performance.now();
     let $ = await getHTML(urlReqBase);
-    const Send= new Date().getTime();
+    const Send = performance.now();
     console.log(`req+cheerio time: ${Send-sstart}`);
 
     let personId = 0;
@@ -50,8 +53,38 @@ const Parser = async (login, surname) => {
                     specialty: $(classOfPerson + ' .views-field-field-specialty .field-content').html(),
                     group: $(classOfPerson + ' .views-field-field-group .field-content').html(),
                 },
+                otherInfo: {
+                    coefficient: $(classOfPerson + ' .views-field-field-coefficient .field-content').html() || null,
+                    fees: [],
+                    attendance: [],
+                },
                 session: new Array(numOfSession)
             };
+
+            
+            const numOfFees = $(classOfPerson + ' .views-field-field-attendance .field-content li').toArray().length || 0;
+
+            for ( let feeIndex = 0; feeIndex < numOfFees; feeIndex++ ) {
+                const feeHTML = cheerio.load($(classOfPerson + ' .views-field-field-attendance .field-content li').eq(feeIndex).html());
+                
+                dataObj.otherInfo.attendance.push({
+                    caption: feeHTML('.caption').html(),
+                    value: feeHTML('.value').html(),
+                    unit: feeHTML('.unit').html(),
+                })
+            }
+
+            const numOfAttendance = $(classOfPerson + ' .views-field-field-fee .field-content li').toArray().length;
+
+            for ( let attendanceIndex = 0; attendanceIndex < numOfAttendance; attendanceIndex++ ) {
+                const feeHTML = cheerio.load($(classOfPerson + ' .views-field-field-fee .field-content li').eq(attendanceIndex).html());
+                
+                dataObj.otherInfo.fees.push({
+                    caption: feeHTML('.caption').html(),
+                    value: feeHTML('.value').html(),
+                    unit: feeHTML('.unit').html(),
+                })
+            }
 
             for ( let j = 0; j < numOfSession; j++ ) {
                 const sessionHTML = cheerio.load($(classOfPerson + ' .field-block').eq(j).html());
@@ -75,9 +108,8 @@ const Parser = async (login, surname) => {
         }
     }
     
-    const end = new Date().getTime();
-    console.log(end-start);
-    console.log((listPersonData.length === 0) ? false : listPersonData);
+    const end = performance.now();
+    console.log(`Full time: ${end-start}`);
     return (listPersonData.length === 0) ? false : listPersonData;
 };
 
@@ -86,7 +118,11 @@ const SmallParser = async (login, surname) => {
     const getHTML = async (url) => {
         const Sstart= new Date().getTime();
 
-        const { data } = await axios.get(url);
+        const { data } = await axios.get(url, {
+            maxContentLength: 10000
+        })
+        .then(d => console.log('done'))
+        .catch(e => console.log(e.toString()));
 
         const Send= new Date().getTime();
         console.log(`req time: ${Send-Sstart}`);
@@ -104,10 +140,10 @@ const SmallParser = async (login, surname) => {
 
     const numOfPage = ( $('.pager-item').toArray().length > 0 ) ? parseInt($('.pager-last a').attr().href.split('=').slice(-1)[0]) : 1;
     for( let page = 1; page <= numOfPage; page++ ) {
-        console.clear();
+        //console.clear();
         console.log(`Complited ${(page/numOfPage*100).toFixed(0)}%`);
         console.log('['+ '#'.repeat((page/numOfPage*100).toFixed(0)) + '_'.repeat(100-(page/numOfPage*100).toFixed(0)) + ']' );
-
+        
         if( page > 1 && numOfPage > 1 ) 
             $ = await getHTML(urlReqBase + '25&page=' + page)
 
@@ -132,12 +168,5 @@ const SmallParser = async (login, surname) => {
     return (listPersonData.length === 0) ? false : listPersonData;
 };
 
-SmallParser('20-ПМС-%','').then((res) => {
-    //console.log(res);
-});
-
-Parser('20-ПМС-%','').then((res) => {
-    //console.log(res);
-});
 
 module.exports = Parser;
