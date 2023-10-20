@@ -61,12 +61,10 @@ const fetching = async (url) => {
   return data;
 };
 
-const start = new Date().getTime();
 
 app.get("/api", (req, res) => {
   const surname = urlParser(decodeURI(req.url)).surname;
   card = urlParser(decodeURI(req.url)).card.replace(/\$/g, '%');
-  console.log(card);
 
   parser(card, surname).then((result) => {
     if (!result) res.status(404);
