@@ -65,7 +65,8 @@ const start = new Date().getTime();
 
 app.get("/api", (req, res) => {
   const surname = urlParser(decodeURI(req.url)).surname;
-  const card = urlParser(decodeURI(req.url)).card;
+  card = urlParser(decodeURI(req.url)).card.replace(/\$/g, '%');
+  console.log(card);
 
   parser(card, surname).then((result) => {
     if (!result) res.status(404);
@@ -73,6 +74,5 @@ app.get("/api", (req, res) => {
     res.json({
       message: result,
     });
-    
   });
 });
