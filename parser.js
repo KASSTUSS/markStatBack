@@ -4,15 +4,11 @@ const fs = require('fs');
 
 
 const Parser = async (login, surname) => {
-    const start = performance.now();
     const getHTML = async (url) => {
         const Sstart = performance.now();
 
         const {data} = await axios.get(url, {
         })
-
-        const Send = performance.now();
-        console.log(`req time: ${Send-Sstart}`);
         return cheerio.load(data);
     };
 
@@ -21,10 +17,7 @@ const Parser = async (login, surname) => {
     
     const urlReqBase = 'http://students.gsu.by/frontpage?title=' + login + '&field_surname_value=' + surname;
     
-    const sstart = performance.now();
     let $ = await getHTML(urlReqBase);
-    const Send = performance.now();
-    console.log(`req+cheerio time: ${Send-sstart}`);
 
     let personId = 0;
     const listPersonData = new Array();
@@ -108,8 +101,6 @@ const Parser = async (login, surname) => {
         }
     }
     
-    const end = performance.now();
-    console.log(`Full time: ${end-start}`);
     return (listPersonData.length === 0) ? false : listPersonData;
 };
 
